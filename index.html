@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Enable Tax Inclusive View</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+      }
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f6f7fb;
+        color: #111;
+      }
+      .wrap {
+        max-width: 420px;
+        margin: 20px auto;
+        padding: 16px;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #d9d9d9;
+        border-radius: 12px;
+        padding: 16px;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+      }
+      h1 {
+        margin: 0 0 8px;
+        font-size: 20px;
+      }
+      p {
+        margin: 0 0 12px;
+        color: #444;
+        line-height: 1.4;
+      }
+      .meta {
+        font-size: 12px;
+        color: #666;
+        word-break: break-all;
+        margin: 10px 0 14px;
+      }
+      .btn {
+        display: inline-block;
+        text-decoration: none;
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-weight: 700;
+        background: #007185;
+        border: 1px solid #007185;
+        color: #fff;
+      }
+      .btn[aria-disabled="true"] {
+        opacity: 0.55;
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <section class="card">
+        <h1>Use Tax-Inclusive View?</h1>
+        <p>Continue to Amazon with tax-inclusive pricing enabled.</p>
+        <div id="target" class="meta">Building link...</div>
+        <a id="continueBtn" class="btn" href="#" aria-disabled="true">Continue to Amazon</a>
+      </section>
+    </main>
+    <script>
+      (function () {
+        var ASSOCIATE_TAG = "inclusivepric-20";
+        var params = new URLSearchParams(window.location.search);
+        var raw = params.get("currenturi") || "";
+        var targetEl = document.getElementById("target");
+        var btn = document.getElementById("continueBtn");
+
+        function setDisabled(msg) {
+          targetEl.textContent = msg;
+          btn.setAttribute("aria-disabled", "true");
+          btn.removeAttribute("href");
+        }
+
+        if (!raw) {
+          setDisabled("Missing currenturi query param.");
+          return;
+        }
+
+        try {
+          var cleaned = raw.trim();
+          if (cleaned.startsWith('"') && cleaned.endsWith('"')) {
+            cleaned = cleaned.slice(1, -1);
+          }
+          var targetUrl = new URL(cleaned);
+          if (!/amazon\.com$/i.test(targetUrl.hostname)) {
+            setDisabled("currenturi must be an amazon.com URL.");
+            return;
+          }
+
+          targetUrl.searchParams.set("convertPageToTaxInclusive", "true");
+          targetUrl.searchParams.set("tag", ASSOCIATE_TAG);
+
+          var finalUrl = targetUrl.toString();
+          targetEl.textContent = finalUrl;
+          btn.href = finalUrl;
+          btn.setAttribute("aria-disabled", "false");
+        } catch (_err) {
+          setDisabled("Invalid currenturi value.");
+        }
+      })();
+    </script>
+  </body>
+</html>
