@@ -3,85 +3,235 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Enable Tax Inclusive View</title>
+    <title>Tax-Inclusive Mode Ready</title>
     <style>
       :root {
-        color-scheme: light dark;
+        color-scheme: light;
       }
+
+      * {
+        box-sizing: border-box;
+      }
+
       body {
         margin: 0;
-        font-family: Arial, sans-serif;
-        background: #f6f7fb;
-        color: #111;
+        font-family: "Inter", "Segoe UI", Arial, sans-serif;
+        background: radial-gradient(circle at top right, #f0f7ff, #eef1f8 45%, #eaedf4 100%);
+        color: #0f172a;
       }
-      .wrap {
-        max-width: 420px;
-        margin: 20px auto;
-        padding: 16px;
+
+      .shell {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
       }
+
       .card {
-        background: #fff;
-        border: 1px solid #d9d9d9;
-        border-radius: 12px;
-        padding: 16px;
-        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+        width: min(560px, 100%);
+        background: #ffffff;
+        border: 1px solid #dbe4f0;
+        border-radius: 18px;
+        box-shadow: 0 16px 44px rgba(15, 23, 42, 0.16);
+        padding: 24px;
       }
-      h1 {
-        margin: 0 0 8px;
-        font-size: 20px;
-      }
-      p {
-        margin: 0 0 12px;
-        color: #444;
-        line-height: 1.4;
-      }
-      .meta {
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: #eef5ff;
+        color: #11427a;
         font-size: 12px;
-        color: #666;
-        word-break: break-all;
-        margin: 10px 0 14px;
-      }
-      .btn {
-        display: inline-block;
-        text-decoration: none;
-        border-radius: 10px;
-        padding: 10px 14px;
         font-weight: 700;
-        background: #007185;
-        border: 1px solid #007185;
-        color: #fff;
+        letter-spacing: 0.2px;
+        margin-bottom: 12px;
       }
+
+      h1 {
+        margin: 0;
+        font-size: 30px;
+        line-height: 1.15;
+        letter-spacing: -0.2px;
+      }
+
+      .subhead {
+        margin: 10px 0 0;
+        color: #334155;
+        line-height: 1.45;
+        font-size: 15px;
+      }
+
+      .achievement {
+        margin-top: 16px;
+        border: 1px solid #dae7ff;
+        background: linear-gradient(135deg, #f8fbff, #eef5ff);
+        border-radius: 14px;
+        padding: 12px 14px;
+        color: #1e3a8a;
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .section {
+        margin-top: 16px;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 14px;
+      }
+
+      .section h2 {
+        margin: 0 0 10px;
+        font-size: 16px;
+      }
+
+      .facts {
+        margin: 0;
+        padding-left: 18px;
+        color: #334155;
+      }
+
+      .facts li + li {
+        margin-top: 8px;
+      }
+
+      .facts strong {
+        color: #0f172a;
+      }
+
+      .meta {
+        margin-top: 12px;
+        font-size: 12px;
+        line-height: 1.4;
+        color: #475569;
+        word-break: break-word;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 10px;
+      }
+
+      .status {
+        margin-top: 12px;
+        border-radius: 10px;
+        padding: 10px 12px;
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .status[data-tone="ok"] {
+        background: #effbf5;
+        color: #166534;
+        border: 1px solid #bbf7d0;
+      }
+
+      .status[data-tone="error"] {
+        background: #fff1f2;
+        color: #9f1239;
+        border: 1px solid #fecdd3;
+      }
+
+      .cta-wrap {
+        margin-top: 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        border-radius: 12px;
+        padding: 12px 16px;
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 0.1px;
+        background: linear-gradient(180deg, #0d7ca8, #086b91);
+        border: 1px solid #0b6f97;
+        color: #ffffff;
+        box-shadow: 0 8px 16px rgba(8, 107, 145, 0.28);
+      }
+
       .btn[aria-disabled="true"] {
         opacity: 0.55;
         pointer-events: none;
+        box-shadow: none;
+      }
+
+      .cta-note {
+        color: #475569;
+        font-size: 12px;
+      }
+
+      @media (max-width: 520px) {
+        .card {
+          padding: 18px;
+        }
+        h1 {
+          font-size: 24px;
+        }
       }
     </style>
   </head>
   <body>
-    <main class="wrap">
-      <section class="card">
-        <h1>Use Tax-Inclusive View?</h1>
-        <p>Continue to Amazon with tax-inclusive pricing enabled.</p>
-        <div id="target" class="meta">Building link...</div>
-        <a id="continueBtn" class="btn" href="#" aria-disabled="true">Continue to Amazon</a>
+    <main class="shell">
+      <section class="card" aria-live="polite">
+        <div class="pill">Tax-Inclusive Mode</div>
+        <h1>You unlocked smarter price visibility</h1>
+        <p class="subhead">
+          Continue to Amazon with tax-inclusive pricing enabled so totals are easier to evaluate before checkout.
+        </p>
+
+        <div class="achievement">Achievement unlocked: You are now shopping with tax-aware totals.</div>
+
+        <section class="section">
+          <h2>Did you know?</h2>
+          <ul class="facts">
+            <li><strong>List prices often exclude sales tax</strong>, so your final payment can be noticeably higher at checkout.</li>
+            <li><strong>Tax rates vary by location</strong>, making side-by-side deal comparison harder without tax-inclusive totals.</li>
+            <li><strong>Seeing inclusive totals early</strong> helps avoid surprise spend and improves purchase decisions.</li>
+          </ul>
+        </section>
+
+        <div id="status" class="status" data-tone="ok">Preparing your Amazon link...</div>
+        <div id="target" class="meta">Building secure destination URL...</div>
+
+        <div class="cta-wrap">
+          <a id="continueBtn" class="btn" href="#" aria-disabled="true">Continue to Amazon with tax-aware prices</a>
+          <div class="cta-note">You can toggle this mode off anytime.</div>
+        </div>
       </section>
     </main>
+
     <script>
       (function () {
         var ASSOCIATE_TAG = "inclusivepric-20";
         var params = new URLSearchParams(window.location.search);
         var raw = params.get("currenturi") || "";
         var targetEl = document.getElementById("target");
+        var statusEl = document.getElementById("status");
         var btn = document.getElementById("continueBtn");
 
-        function setDisabled(msg) {
-          targetEl.textContent = msg;
+        function setDisabled(message) {
+          statusEl.textContent = message;
+          statusEl.setAttribute("data-tone", "error");
+          targetEl.textContent = "Please go back and try again from an Amazon page.";
           btn.setAttribute("aria-disabled", "true");
           btn.removeAttribute("href");
         }
 
+        function setReady(message) {
+          statusEl.textContent = message;
+          statusEl.setAttribute("data-tone", "ok");
+        }
+
         if (!raw) {
-          setDisabled("Missing currenturi query param.");
+          setDisabled("Missing source page URL.");
           return;
         }
 
@@ -90,9 +240,10 @@
           if (cleaned.startsWith('"') && cleaned.endsWith('"')) {
             cleaned = cleaned.slice(1, -1);
           }
+
           var targetUrl = new URL(cleaned);
           if (!/amazon\.com$/i.test(targetUrl.hostname)) {
-            setDisabled("currenturi must be an amazon.com URL.");
+            setDisabled("Source URL must be an amazon.com page.");
             return;
           }
 
@@ -103,8 +254,9 @@
           targetEl.textContent = finalUrl;
           btn.href = finalUrl;
           btn.setAttribute("aria-disabled", "false");
+          setReady("Ready. Continue to Amazon with tax-inclusive mode enabled.");
         } catch (_err) {
-          setDisabled("Invalid currenturi value.");
+          setDisabled("Invalid source page URL.");
         }
       })();
     </script>
