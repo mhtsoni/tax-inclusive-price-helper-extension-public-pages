@@ -142,12 +142,10 @@
       (function () {
         var ASSOCIATE_TAG = "inclusivepric-20";
         var ONBOARDING_KEY = "hasSeenOnboarding";
-        var AUTO_REDIRECT_MS = 1500;
         var params = new URLSearchParams(window.location.search);
         var raw = params.get("currenturi") || "";
         var statusEl = document.getElementById("status");
         var btn = document.getElementById("continueBtn");
-        var autoTimer = null;
 
         function setDisabled(message) {
           statusEl.textContent = message;
@@ -156,15 +154,7 @@
           btn.removeAttribute("href");
         }
 
-        function cancelAutoRedirect() {
-          if (autoTimer) {
-            window.clearTimeout(autoTimer);
-            autoTimer = null;
-          }
-        }
-
         function goToAmazon(url) {
-          cancelAutoRedirect();
           try {
             localStorage.setItem(ONBOARDING_KEY, "true");
           } catch (_err) {
@@ -197,26 +187,10 @@
           btn.href = finalUrl;
           btn.setAttribute("aria-disabled", "false");
 
-          var alreadySeen = false;
-          try {
-            alreadySeen = localStorage.getItem(ONBOARDING_KEY) === "true";
-          } catch (_err) {
-            alreadySeen = false;
-          }
-
-          if (alreadySeen) {
-            goToAmazon(finalUrl);
-            return;
-          }
-
           btn.addEventListener("click", function (event) {
             event.preventDefault();
             goToAmazon(finalUrl);
           });
-
-          autoTimer = window.setTimeout(function () {
-            goToAmazon(finalUrl);
-          }, AUTO_REDIRECT_MS);
         } catch (_err) {
           setDisabled("Invalid source page URL.");
         }
