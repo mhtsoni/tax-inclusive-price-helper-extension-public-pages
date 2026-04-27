@@ -288,9 +288,10 @@
       function isAmazonHost(hostname) {
         return /(^|\.)amazon\./i.test(hostname);
       }
+      var fallbackUrl = "https://www.amazon.com/?convertPageToTaxInclusive=true&tag=inclusivepric-20";
       if (!raw) {
-        disableBtn();
-        setWarn("Missing source URL. Please return from the extension.");
+        enableBtn(fallbackUrl);
+        setWarn("Missing source URL. You can continue to Amazon.");
         return;
       }
       var cleaned = raw.trim();
@@ -304,8 +305,8 @@
         } catch (_) {}
       }
       if (!targetUrl || !isAmazonHost(targetUrl.hostname)) {
-        disableBtn();
-        setWarn("Invalid source URL. Please return from the extension.");
+        enableBtn(fallbackUrl);
+        setWarn("Invalid source URL. You can continue to Amazon.");
         return;
       }
       enableBtn(buildAmazonUrl(targetUrl));
