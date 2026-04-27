@@ -107,7 +107,7 @@
             <p class="hero-sub">
                 Tax-inclusive pricing is enabled so you can compare realistic totals with confidence before checkout.
             </p>
-            <div id="statusLine" class="redirect-status" role="status" aria-live="polite" data-tone="ok">
+            <div id="status" class="redirect-status" role="status" aria-live="polite" data-tone="ok">
                 Tax-inclusive pricing is ON
             </div>
             <p class="status-note">No automatic redirect. You choose when to continue.</p>
@@ -238,68 +238,60 @@
     </footer>
 
     <script>
-        (function () {
-            var ASSOCIATE_TAG = "inclusivepric-20";
-            var ONBOARDING_KEY = "hasSeenOnboarding";
-            var DEFAULT_AMAZON_URL = "https://www.amazon.com/s?&tag=inclusivepric-20";
-            var statusLine = document.getElementById("statusLine");
-            var continueBtn = document.getElementById("continueBtn");
-            var params = new URLSearchParams(window.location.search);
-            var currentUri = params.get("currenturi");
-
-            function setFallbackCta(message) {
-                if (message) {
-                    statusLine.textContent = message;
-                    statusLine.setAttribute("data-tone", "error");
-                }
-                continueBtn.href = DEFAULT_AMAZON_URL;
-                continueBtn.setAttribute("aria-disabled", "false");
-            }
-
-            if (!currentUri) {
-                setFallbackCta("");
-                return;
-            }
-
-            try {
-                var cleaned = currentUri.trim();
-                if (cleaned.startsWith("\"") && cleaned.endsWith("\"")) {
-                    cleaned = cleaned.slice(1, -1);
-                }
-
-                var destinationUrl = new URL(cleaned);
-                if (!/(^|\\.)amazon\\.com$/i.test(destinationUrl.hostname)) {
-                    setFallbackCta("Invalid source URL. You can continue to Amazon.");
-                    return;
-                }
-
-                destinationUrl.searchParams.set("convertPageToTaxInclusive", "true");
-                destinationUrl.searchParams.set("tag", ASSOCIATE_TAG);
-
-                var finalUrl = destinationUrl.toString();
-                continueBtn.href = finalUrl;
-                continueBtn.setAttribute("aria-disabled", "false");
-                statusLine.textContent = "Tax-inclusive pricing is ON";
-                statusLine.setAttribute("data-tone", "ok");
-
-                continueBtn.addEventListener("click", function (event) {
-                    event.preventDefault();
-                    if (continueBtn.getAttribute("aria-disabled") === "true") {
-                        return;
-                    }
-
-                    try {
-                        localStorage.setItem(ONBOARDING_KEY, "true");
-                    } catch (_error) {
-                        // Do not block user flow if storage is unavailable.
-                    }
-
-                    window.location.assign(finalUrl);
-                });
-            } catch (_error) {
-                setFallbackCta("Invalid source URL format. You can continue to Amazon.");
-            }
-        })();
+    (function () {
+      var ASSOCIATE_TAG = "inclusivepric-20";
+      var params = new URLSearchParams(window.location.search);
+      var raw = params.get("currenturi") || "";
+      var statusEl = document.getElementById("status");
+      var btn = document.getElementById("continueBtn");
+      function setReady(msg) {
+        statusEl.textContent = msg;
+        statusEl.setAttribute("data-tone", "ok");
+      }
+      function setWarn(msg) {
+        statusEl.textContent = msg;
+        statusEl.setAttribute("data-tone", "error");
+      }
+      function enableBtn(finalUrl) {
+        btn.href = finalUrl;
+        btn.setAttribute("aria-disabled", "false");
+      }
+      function buildAmazonUrl(targetUrl) {
+        targetUrl.searchParams.set("convertPageToTaxInclusive", "true");
+        targetUrl.searchParams.set("tag", ASSOCIATE_TAG);
+        return targetUrl.toString();
+      }
+      function parseCandidate(input) {
+        try { return new URL(input); } catch (_) { return null; }
+      }
+      function isAmazonHost(hostname) {
+        return /(^|\.)amazon\./i.test(hostname);
+      }
+      var fallback = new URL("https://www.amazon.com/");
+      var fallbackUrl = buildAmazonUrl(fallback);
+      if (!raw) {
+        enableBtn(fallbackUrl);
+        setWarn("Missing source URL. Continuing to Amazon home.");
+        return;
+      }
+      var cleaned = raw.trim();
+      if (cleaned.startsWith('"') && cleaned.endsWith('"')) {
+        cleaned = cleaned.slice(1, -1);
+      }
+      var targetUrl = parseCandidate(cleaned);
+      if (!targetUrl) {
+        try {
+          targetUrl = parseCandidate(decodeURIComponent(cleaned));
+        } catch (_) {}
+      }
+      if (!targetUrl || !isAmazonHost(targetUrl.hostname)) {
+        enableBtn(fallbackUrl);
+        setWarn("Invalid source URL. You can continue to Amazon.");
+        return;
+      }
+      enableBtn(buildAmazonUrl(targetUrl));
+      setReady("Tax-inclusive pricing is ON. Continue to Amazon.");
+    })();
     </script>
 </body>
 </html>
