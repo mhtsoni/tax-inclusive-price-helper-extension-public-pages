@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Continue to Amazon</title>
+    <style>
+      :root {
+        color-scheme: light;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Inter", "Segoe UI", Arial, sans-serif;
+        background: linear-gradient(180deg, #f6f8fb 0%, #eef2f7 100%);
+        color: #0f172a;
+      }
+
+      .shell {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+      }
+
+      .card {
+        width: min(480px, 100%);
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 10px 26px rgba(15, 23, 42, 0.12);
+        padding: 22px 20px;
+        text-align: center;
+        opacity: 0;
+        transform: translateY(4px);
+        animation: fadeInUp 150ms ease-out forwards;
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: 28px;
+        line-height: 1.2;
+        letter-spacing: -0.1px;
+      }
+
+      .subhead {
+        margin: 0;
+        color: #334155;
+        line-height: 1.4;
+        font-size: 15px;
+      }
+
+      .status {
+        margin-top: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #067d62;
+      }
+
+      .status[data-tone="error"] {
+        color: #9f1239;
+      }
+
+      .cta-wrap {
+        margin-top: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        border-radius: 10px;
+        padding: 12px 18px;
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 0;
+        background: linear-gradient(180deg, #1a86b0, #0f739c);
+        border: 1px solid #106f95;
+        color: #ffffff;
+        box-shadow: 0 8px 14px rgba(16, 111, 149, 0.26);
+      }
+
+      .btn[aria-disabled="true"] {
+        opacity: 0.55;
+        pointer-events: none;
+        box-shadow: none;
+      }
+
+      .cta-note {
+        color: #475569;
+        font-size: 12px;
+      }
+
+      .footer-note {
+        margin-top: 12px;
+        font-size: 12px;
+        color: #565959;
+      }
+
+      @keyframes fadeInUp {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 520px) {
+        .card {
+          padding: 18px 16px;
+        }
+        h1 {
+          font-size: 23px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <section class="card" aria-live="polite">
+        <h1>See what you’ll actually pay on Amazon</h1>
+        <p class="subhead">Prices now include estimated tax so you can compare real totals.</p>
+        <div id="status" class="status" data-tone="ok">✓ Tax-inclusive pricing is ON</div>
+
+        <div class="cta-wrap">
+          <a id="continueBtn" class="btn" href="#" aria-disabled="true">Continue to Amazon</a>
+          <div class="cta-note">Tax-inclusive pricing is enabled</div>
+        </div>
+
+        <div class="footer-note">We may use affiliate links to support this extension.</div>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        var ASSOCIATE_TAG = "inclusivepric-20";
+        var ONBOARDING_KEY = "hasSeenOnboarding";
+        var params = new URLSearchParams(window.location.search);
+        var raw = params.get("currenturi") || "";
+        var statusEl = document.getElementById("status");
+        var btn = document.getElementById("continueBtn");
+
+        function setDisabled(message) {
+          statusEl.textContent = message;
+          statusEl.setAttribute("data-tone", "error");
+          btn.setAttribute("aria-disabled", "true");
+          btn.removeAttribute("href");
+        }
+
+        function goToAmazon(url) {
+          try {
+            localStorage.setItem(ONBOARDING_KEY, "true");
+          } catch (_err) {
+            // Ignore storage failures and continue.
+          }
+          window.location.replace(url);
+        }
+
+        if (!raw) {
+          setDisabled("Missing source page URL.");
+          return;
+        }
+
+        try {
+          var cleaned = raw.trim();
+          if (cleaned.startsWith('"') && cleaned.endsWith('"')) {
+            cleaned = cleaned.slice(1, -1);
+          }
+
+          var targetUrl = new URL(cleaned);
+          if (!/amazon\.com$/i.test(targetUrl.hostname)) {
+            setDisabled("Source URL must be an amazon.com page.");
+            return;
+          }
+
+          targetUrl.searchParams.set("convertPageToTaxInclusive", "true");
+          targetUrl.searchParams.set("tag", ASSOCIATE_TAG);
+
+          var finalUrl = targetUrl.toString();
+          btn.href = finalUrl;
+          btn.setAttribute("aria-disabled", "false");
+
+          btn.addEventListener("click", function (event) {
+            event.preventDefault();
+            goToAmazon(finalUrl);
+          });
+        } catch (_err) {
+          setDisabled("Invalid source page URL.");
+        }
+      })();
+    </script>
+  </body>
+</html>
