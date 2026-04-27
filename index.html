@@ -23,6 +23,11 @@
             color: var(--text-muted);
             font-size: 14px;
         }
+        .hero-continue-wrap {
+            margin-top: 16px;
+            display: flex;
+            justify-content: center;
+        }
         .btn-acid[aria-disabled="true"] {
             opacity: 0.55;
             pointer-events: none;
@@ -111,6 +116,9 @@
                 Tax-inclusive pricing is ON
             </div>
             <p class="status-note">No automatic redirect. You choose when to continue.</p>
+            <div class="hero-continue-wrap">
+                <a id="continueBtnTop" href="#" class="btn-acid" aria-disabled="true">Continue to Amazon</a>
+            </div>
         </div>
     </section>
 
@@ -244,6 +252,7 @@
       var raw = params.get("currenturi") || "";
       var statusEl = document.getElementById("status");
       var btn = document.getElementById("continueBtn");
+      var topBtn = document.getElementById("continueBtnTop");
       function setReady(msg) {
         statusEl.textContent = msg;
         statusEl.setAttribute("data-tone", "ok");
@@ -255,6 +264,10 @@
       function enableBtn(finalUrl) {
         btn.href = finalUrl;
         btn.setAttribute("aria-disabled", "false");
+        if (topBtn) {
+          topBtn.href = finalUrl;
+          topBtn.setAttribute("aria-disabled", "false");
+        }
       }
       function buildAmazonUrl(targetUrl) {
         targetUrl.searchParams.set("convertPageToTaxInclusive", "true");
