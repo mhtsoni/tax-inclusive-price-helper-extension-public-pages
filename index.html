@@ -269,6 +269,14 @@
           topBtn.setAttribute("aria-disabled", "false");
         }
       }
+      function disableBtn() {
+        btn.setAttribute("aria-disabled", "true");
+        btn.removeAttribute("href");
+        if (topBtn) {
+          topBtn.setAttribute("aria-disabled", "true");
+          topBtn.removeAttribute("href");
+        }
+      }
       function buildAmazonUrl(targetUrl) {
         targetUrl.searchParams.set("convertPageToTaxInclusive", "true");
         targetUrl.searchParams.set("tag", ASSOCIATE_TAG);
@@ -280,11 +288,9 @@
       function isAmazonHost(hostname) {
         return /(^|\.)amazon\./i.test(hostname);
       }
-      var fallback = new URL("https://www.amazon.com/");
-      var fallbackUrl = buildAmazonUrl(fallback);
       if (!raw) {
-        enableBtn(fallbackUrl);
-        setWarn("Missing source URL. Continuing to Amazon home.");
+        disableBtn();
+        setWarn("Missing source URL. Please return from the extension.");
         return;
       }
       var cleaned = raw.trim();
@@ -298,8 +304,8 @@
         } catch (_) {}
       }
       if (!targetUrl || !isAmazonHost(targetUrl.hostname)) {
-        enableBtn(fallbackUrl);
-        setWarn("Invalid source URL. You can continue to Amazon.");
+        disableBtn();
+        setWarn("Invalid source URL. Please return from the extension.");
         return;
       }
       enableBtn(buildAmazonUrl(targetUrl));
